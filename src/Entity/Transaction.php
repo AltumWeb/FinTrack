@@ -26,6 +26,12 @@ class Transaction
     #[ORM\Column(length: 255)]
     private ?string $description = null;
 
+    #[ORM\ManyToOne(inversedBy: 'transaction')]
+    private ?Account $account = null;
+
+    #[ORM\ManyToOne(inversedBy: 'transactions')]
+    private ?Category $category = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -75,6 +81,30 @@ class Transaction
     public function setDescription(string $description): static
     {
         $this->description = $description;
+
+        return $this;
+    }
+
+    public function getAccount(): ?Account
+    {
+        return $this->account;
+    }
+
+    public function setAccount(?Account $account): static
+    {
+        $this->account = $account;
+
+        return $this;
+    }
+
+    public function getCategory(): ?Category
+    {
+        return $this->category;
+    }
+
+    public function setCategory(?Category $category): static
+    {
+        $this->category = $category;
 
         return $this;
     }

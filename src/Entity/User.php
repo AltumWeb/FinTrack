@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -33,6 +35,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 32, nullable: true)]
     private ?string $firstname = null;
+
+    /**
+     * @var Collection<int, Account>
+     */
+    #[ORM\OneToMany(targetEntity: Account::class, mappedBy: 'user')]
+    private Collection $user_account;
+
+    public function __construct()
+    {
+        $this->user_account = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -117,6 +130,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setFirstname(?string $firstname): static
     {
         $this->firstname = $firstname;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Account>
+     */
+    public function getUserAccount(): Collection
+    {
+        return $this->user_account;
+    }
+
+    public function addUserAccount(Account $userAccount): static
+    {
+        if (!$this->user_account->contains($userAccount)) {
+            $this->user_account->add($userAccount);
+            $userAccount->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUserAccount(Account $userAccount): static
+    {
+        if ($this->user_account->removeElement($userAccount)) {
+            // set the owning side to null (unless already changed)
+            if ($userAccount->getUser() === $this) {
+                $userAccount->setUser(null);
+            }
+        }
 
         return $this;
     }

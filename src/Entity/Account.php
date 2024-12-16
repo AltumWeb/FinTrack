@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\AccountRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: AccountRepository::class)]
@@ -21,6 +23,20 @@ class Account
 
     #[ORM\Column]
     private ?int $Balance = null;
+
+    #[ORM\ManyToOne(inversedBy: 'user_account')]
+    private ?User $user = null;
+
+    /**
+     * @var Collection<int, Transaction>
+     */
+    #[ORM\OneToMany(targetEntity: Transaction::class, mappedBy: 'account')]
+    private Collection $transaction;
+
+    public function __construct()
+    {
+        $this->transaction = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -59,6 +75,48 @@ class Account
     public function setBalance(int $Balance): static
     {
         $this->Balance = $Balance;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Transaction>
+     */
+    public function getTransaction(): Collection
+    {
+        return $this->transaction;
+    }
+
+    public function addTransaction(Transaction $transaction): static
+    {
+        if (!$this->transaction->contains($transaction)) {
+            $this->transaction->add($transaction);
+            $transaction->setAccount($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTransaction(Transaction $transaction): static
+    {
+        if ($this->transaction->removeElement($transaction)) {
+            // set the owning side to null (unless already changed)
+            if ($transaction->getAccount() === $this) {
+                $transaction->setAccount(null);
+            }
+        }
 
         return $this;
     }
