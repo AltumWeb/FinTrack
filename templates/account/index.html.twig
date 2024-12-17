@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello AccountController!{% endblock %}
+
+{% block body %}
+    <h1>Liste des comptes</h1>
+
+    {% for message in app.flashes('success') %}
+        <div class="bg-green-400 p-5 rounded-md mb-10 sm:w-full sm:max-w-sm">
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('error') %}
+        <div class="bg-red-400 p-5 rounded-md mb-10 sm:w-full sm:max-w-sm">
+            {{ message }}
+        </div>
+    {% endfor %}
+    <ul>
+        {% for account in accounts %}
+            <li>{{ account.name }} | {{ account.balance }}€ | {{ account.type }} | <a href="{{ path('app_account_edit', {'id': account.id}) }}">Modifier</a> | <a href="{{ path('app_account_delete', {'id': account.id}) }}" class="delete-link">Supprimer</a></li>
+        {% endfor %}
+    </ul>
+
+    <a href="{{ path('app_account_new') }}">Nouveau compte</a>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const deleteLinks = document.querySelectorAll('.delete-link');
+            deleteLinks.forEach(function(link) {
+                link.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    if (confirm('Êtes-vous sûr de vouloir supprimer ce compte ?')) {
+                        window.location.href = this.href;
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}
