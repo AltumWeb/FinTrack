@@ -24,10 +24,6 @@ class AccountType extends AbstractType
                 ],
             ])
             ->add('balance')
-            ->add('user', EntityType::class, [
-                'class' => User::class,
-                'choice_label' => 'id',
-            ])
             ->add('submit', SubmitType::class)
         ;
     }

@@ -41,6 +41,7 @@ class AccountController extends AbstractController
         }
 
         $account = new Account();
+        $account->setUser($this->getUser());
 
         $form = $this->createForm(AccountType::class, $account);
         $form->handleRequest($request);

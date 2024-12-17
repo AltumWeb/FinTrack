@@ -3,12 +3,24 @@
 {% block title %}Hello AccountController!{% endblock %}
 
 {% block body %}
-    <h1>Hello AccountController!</h1>
-    <p>This is the account controller.</p>
-    <p>Here is the list of accounts:</p>
+    <h1>Liste des comptes</h1>
+
+    {% for message in app.flashes('success') %}
+        <div class="bg-green-400 p-5 rounded-md mb-10 sm:w-full sm:max-w-sm">
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('error') %}
+        <div class="bg-red-400 p-5 rounded-md mb-10 sm:w-full sm:max-w-sm">
+            {{ message }}
+        </div>
+    {% endfor %}
     <ul>
         {% for account in accounts %}
-            <li>{{ account.name }} | {{ account.balance }}€</li>
+            <li>{{ account.name }} | {{ account.balance }}€ | {{ account.type }}</li>
         {% endfor %}
     </ul>
+
+    <a href="{{ path('app_account_new') }}">Nouveau compte</a>
 {% endblock %}
