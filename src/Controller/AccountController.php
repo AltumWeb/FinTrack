@@ -91,4 +91,28 @@ class AccountController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
+
+    #[Route('/account/delete/{id}', name: 'app_account_delete', methods: ['GET', 'POST'])]
+    public function delete(int $id, AccountRepository $repository): Response
+    {
+        if (!$this->getUser()) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $accounts = $repository->find($id);
+
+        if (!$accounts) {
+            throw $this->createNotFoundException('Le compte n\'existe pas');
+        }
+
+        $this->entityManager->remove($accounts);
+        $this->entityManager->flush();
+
+        $this->addFlash(
+            'success',
+            'Le compte a été supprimé avec succès !'
+        );
+
+        return $this->redirectToRoute('app_account');
+    }
 }
