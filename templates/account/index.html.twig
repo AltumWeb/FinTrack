@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello AccountController!{% endblock %}
+
+{% block body %}
+    <h1>Hello AccountController!</h1>
+    <p>This is the account controller.</p>
+    <p>Here is the list of accounts:</p>
+    <ul>
+        {% for account in accounts %}
+            <li>{{ account.name }} | {{ account.balance }}€</li>
+        {% endfor %}
+    </ul>
+{% endblock %}
