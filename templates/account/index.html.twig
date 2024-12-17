@@ -18,7 +18,7 @@
     {% endfor %}
     <ul>
         {% for account in accounts %}
-            <li>{{ account.name }} | {{ account.balance }}€ | {{ account.type }}</li>
+            <li>{{ account.name }} | {{ account.balance }}€ | {{ account.type }} | <a href="{{ path('app_account_edit', {'id': account.id}) }}">Modifier</a></li>
         {% endfor %}
     </ul>
 

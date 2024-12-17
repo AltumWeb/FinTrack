@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Account;
 use App\Form\AccountType;
+use App\Repository\AccountRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -56,6 +57,36 @@ class AccountController extends AbstractController
         }
 
         return $this->render('account/new.html.twig', [
+            'controller_name' => 'AccountController',
+            'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/account/edit/{id}', name: 'app_account_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, int $id, AccountRepository $repository): Response
+    {
+        if (!$this->getUser()) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $accounts = $repository->find($id);
+
+        if (!$accounts) {
+            throw $this->createNotFoundException('Le compte n\'existe pas');
+        }
+
+        $form = $this->createForm(AccountType::class, $accounts);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->entityManager->flush();
+
+            $this->addFlash('success', 'Le compte a été modifié avec succès !');
+
+            return $this->redirectToRoute('app_account');
+        }
+
+        return $this->render('account/edit.html.twig', [
             'controller_name' => 'AccountController',
             'form' => $form->createView(),
         ]);
