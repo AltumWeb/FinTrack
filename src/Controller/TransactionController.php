@@ -90,4 +90,28 @@ class TransactionController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
+
+    #[Route('/transaction/delete/{id}', name: 'app_transaction_delete', methods: ['GET', 'POST'])]
+    public function delete(int $id, TransactionRepository $repository): Response
+    {
+        if (!$this->getUser()) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $transactions = $repository->find($id);
+
+        if (!$transactions) {
+            throw $this->createNotFoundException('La transaction n\'existe pas');
+        }
+
+        $this->entityManager->remove($transactions);
+        $this->entityManager->flush();
+
+        $this->addFlash(
+            'success',
+            'La transaction a été supprimée avec succès !'
+        );
+
+        return $this->redirectToRoute('app_transaction');
+    }
 }
