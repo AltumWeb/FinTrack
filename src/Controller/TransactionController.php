@@ -47,6 +47,13 @@ class TransactionController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $account = $transaction->getAccount();
+            if ($transaction->getType() === 'expense') {
+                $account->setBalance($account->getBalance() - $transaction->getAmount());
+            } else {
+                $account->setBalance($account->getBalance() + $transaction->getAmount());
+            }
+
             $this->entityManager->persist($transaction);
             $this->entityManager->flush();
 
@@ -68,19 +75,39 @@ class TransactionController extends AbstractController
             return $this->redirectToRoute('app_login');
         }
 
-        $transactions = $repository->find($id);
+        $transaction = $repository->find($id);
 
-        if (!$transactions) {
-            throw $this->createNotFoundException('Le compte n\'existe pas');
+        if (!$transaction) {
+            throw $this->createNotFoundException('La transaction n\'existe pas');
         }
 
-        $form = $this->createForm(TransactionType::class, $transactions);
+        $oldAmount = $transaction->getAmount();
+        $oldType = $transaction->getType();
+        $oldAccount = $transaction->getAccount();
+
+        $form = $this->createForm(TransactionType::class, $transaction);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $newAmount = $transaction->getAmount();
+            $newType = $transaction->getType();
+            $newAccount = $transaction->getAccount();
+
+            if ($oldType === 'expense') {
+                $oldAccount->setBalance($oldAccount->getBalance() + $oldAmount);
+            } else {
+                $oldAccount->setBalance($oldAccount->getBalance() - $oldAmount);
+            }
+
+            if ($newType === 'expense') {
+                $newAccount->setBalance($newAccount->getBalance() - $newAmount);
+            } else {
+                $newAccount->setBalance($newAccount->getBalance() + $newAmount);
+            }
+
             $this->entityManager->flush();
 
-            $this->addFlash('success', 'La transaction a été ajoutée avec succès !');
+            $this->addFlash('success', 'La transaction a été modifiée avec succès !');
 
             return $this->redirectToRoute('app_transaction');
         }
