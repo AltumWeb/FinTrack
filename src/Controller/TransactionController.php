@@ -1,0 +1,144 @@
+<?php
+
+namespace App\Controller;
+
+use App\Entity\Transaction;
+use App\Form\TransactionType;
+use App\Repository\TransactionRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Attribute\Route;
+
+class TransactionController extends AbstractController
+{
+    private EntityManagerInterface $entityManager;
+
+    public function __construct(EntityManagerInterface $entityManager)
+    {
+        $this->entityManager = $entityManager;
+    }
+    #[Route('/transaction', name: 'app_transaction')]
+    public function index(): Response
+    {
+        if (!$this->getUser()) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $repository = $this->entityManager->getRepository(Transaction::class);
+
+        return $this->render('transaction/index.html.twig', [
+            'controller_name' => 'TransactionController',
+            'transactions' => $repository->findAll(),
+        ]);
+    }
+
+    #[Route('/transaction/new', name: 'app_transaction_new')]
+    public function new(Request $request): Response
+    {
+        if (!$this->getUser()) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $transaction = new Transaction();
+
+        $form = $this->createForm(TransactionType::class, $transaction);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $account = $transaction->getAccount();
+            if ($transaction->getType() === 'expense') {
+                $account->setBalance($account->getBalance() - $transaction->getAmount());
+            } else {
+                $account->setBalance($account->getBalance() + $transaction->getAmount());
+            }
+
+            $this->entityManager->persist($transaction);
+            $this->entityManager->flush();
+
+            $this->addFlash('success', 'La transaction a été ajoutée avec succès !');
+
+            return $this->redirectToRoute('app_transaction');
+        }
+
+        return $this->render('transaction/new.html.twig', [
+            'controller_name' => 'TransactionController',
+            'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/transaction/edit/{id}', name: 'app_transaction_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, int $id, TransactionRepository $repository): Response
+    {
+        if (!$this->getUser()) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $transaction = $repository->find($id);
+
+        if (!$transaction) {
+            throw $this->createNotFoundException('La transaction n\'existe pas');
+        }
+
+        $oldAmount = $transaction->getAmount();
+        $oldType = $transaction->getType();
+        $oldAccount = $transaction->getAccount();
+
+        $form = $this->createForm(TransactionType::class, $transaction);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $newAmount = $transaction->getAmount();
+            $newType = $transaction->getType();
+            $newAccount = $transaction->getAccount();
+
+            if ($oldType === 'expense') {
+                $oldAccount->setBalance($oldAccount->getBalance() + $oldAmount);
+            } else {
+                $oldAccount->setBalance($oldAccount->getBalance() - $oldAmount);
+            }
+
+            if ($newType === 'expense') {
+                $newAccount->setBalance($newAccount->getBalance() - $newAmount);
+            } else {
+                $newAccount->setBalance($newAccount->getBalance() + $newAmount);
+            }
+
+            $this->entityManager->flush();
+
+            $this->addFlash('success', 'La transaction a été modifiée avec succès !');
+
+            return $this->redirectToRoute('app_transaction');
+        }
+
+        return $this->render('transaction/edit.html.twig', [
+            'controller_name' => 'TransactionController',
+            'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/transaction/delete/{id}', name: 'app_transaction_delete', methods: ['GET', 'POST'])]
+    public function delete(int $id, TransactionRepository $repository): Response
+    {
+        if (!$this->getUser()) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $transactions = $repository->find($id);
+
+        if (!$transactions) {
+            throw $this->createNotFoundException('La transaction n\'existe pas');
+        }
+
+        $this->entityManager->remove($transactions);
+        $this->entityManager->flush();
+
+        $this->addFlash(
+            'success',
+            'La transaction a été supprimée avec succès !'
+        );
+
+        return $this->redirectToRoute('app_transaction');
+    }
+}

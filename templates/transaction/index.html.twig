@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello TransactionController!{% endblock %}
+
+{% block body %}
+    <h1>Liste des transactions</h1>
+
+    {% for message in app.flashes('success') %}
+        <div class="bg-green-400 p-5 rounded-md mb-10 sm:w-full sm:max-w-sm">
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('error') %}
+        <div class="bg-red-400 p-5 rounded-md mb-10 sm:w-full sm:max-w-sm">
+            {{ message }}
+        </div>
+    {% endfor %}
+    <ul>
+        {% for transaction in transactions %}
+            <li>{{ transaction.amount }}€ | {{ transaction.type }} | {{ transaction.description }} | {{ transaction.account.name }} | <a href="{{ path('app_transaction_edit', {'id': transaction.id}) }}">Modifier</a> | <a href="{{ path('app_transaction_delete', {'id': transaction.id}) }}" class="delete-link">Supprimer</a></li>
+        {% endfor %}
+    </ul>
+
+    <a href="{{ path('app_transaction_new') }}">Nouvelle transaction</a>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const deleteLinks = document.querySelectorAll('.delete-link');
+            deleteLinks.forEach(function(link) {
+                link.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    if (confirm('Êtes-vous sûr de vouloir supprimer cette transaction ?')) {
+                        window.location.href = this.href;
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}

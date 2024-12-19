@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    {{ form_start(form) }}
+    {{ form_row(form.amount) }}
+    {{ form_row(form.type) }}
+    {{ form_row(form.description) }}
+    {{ form_row(form.account) }}
+    {{ form_row(form.category) }}
+    {{ form_row(form.date) }}
+    {{ form_row(form.submit) }}
+    {{ form_end(form) }}
+{% endblock %}
