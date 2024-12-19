@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Transaction;
 use App\Form\TransactionType;
+use App\Repository\TransactionRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -55,6 +56,36 @@ class TransactionController extends AbstractController
         }
 
         return $this->render('transaction/new.html.twig', [
+            'controller_name' => 'TransactionController',
+            'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/transaction/edit/{id}', name: 'app_transaction_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, int $id, TransactionRepository $repository): Response
+    {
+        if (!$this->getUser()) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $transactions = $repository->find($id);
+
+        if (!$transactions) {
+            throw $this->createNotFoundException('Le compte n\'existe pas');
+        }
+
+        $form = $this->createForm(TransactionType::class, $transactions);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->entityManager->flush();
+
+            $this->addFlash('success', 'La transaction a été ajoutée avec succès !');
+
+            return $this->redirectToRoute('app_transaction');
+        }
+
+        return $this->render('transaction/edit.html.twig', [
             'controller_name' => 'TransactionController',
             'form' => $form->createView(),
         ]);
