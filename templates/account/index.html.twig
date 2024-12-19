@@ -1,26 +1,30 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello AccountController!{% endblock %}
-
 {% block body %}
-    <h1>Liste des comptes</h1>
-
-    {% for message in app.flashes('success') %}
-        <div class="bg-green-400 p-5 rounded-md mb-10 sm:w-full sm:max-w-sm">
-            {{ message }}
-        </div>
-    {% endfor %}
-
-    {% for message in app.flashes('error') %}
-        <div class="bg-red-400 p-5 rounded-md mb-10 sm:w-full sm:max-w-sm">
-            {{ message }}
-        </div>
-    {% endfor %}
-    <ul>
+    <h1 class="text-2xl font-bold mb-6">Comptes Bancaires</h1>
+    <table class="w-full bg-white shadow-md rounded text-left">
+        <thead class="bg-gray-200">
+        <tr>
+            <th class="p-4">Nom</th>
+            <th class="p-4">Type</th>
+            <th class="p-4">Solde</th>
+            <th class="p-4">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
         {% for account in accounts %}
-            <li>{{ account.name }} | {{ account.balance }}€ | {{ account.type }} | <a href="{{ path('app_account_edit', {'id': account.id}) }}">Modifier</a> | <a href="{{ path('app_account_delete', {'id': account.id}) }}" class="delete-link">Supprimer</a></li>
+            <tr>
+                <td class="p-4">{{ account.name }}</td>
+                <td class="p-4">{{ account.type }}</td>
+                <td class="p-4">{{ account.balance }}€</td>
+                <td class="p-4">
+                    <a href="{{ path('app_account_edit', {'id': account.id}) }}" class="bg-yellow-500 hover:bg-yellow-600 text-white py-1 px-3 rounded">Modifier</a>
+                    <a href="{{ path('app_account_delete', {'id': account.id}) }}" class="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded">Supprimer</a>
+                </td>
+            </tr>
         {% endfor %}
-    </ul>
+        </tbody>
+    </table>
 
     <a href="{{ path('app_account_new') }}">Nouveau compte</a>
 

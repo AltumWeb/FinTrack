@@ -1,26 +1,42 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello TransactionController!{% endblock %}
-
 {% block body %}
-    <h1>Liste des transactions</h1>
-
-    {% for message in app.flashes('success') %}
-        <div class="bg-green-400 p-5 rounded-md mb-10 sm:w-full sm:max-w-sm">
-            {{ message }}
-        </div>
-    {% endfor %}
-
-    {% for message in app.flashes('error') %}
-        <div class="bg-red-400 p-5 rounded-md mb-10 sm:w-full sm:max-w-sm">
-            {{ message }}
-        </div>
-    {% endfor %}
-    <ul>
+    <h1 class="text-2xl font-bold mb-6">Transactions</h1>
+    <table class="w-full bg-white shadow-md rounded text-left">
+        <thead class="bg-gray-200">
+        <tr>
+            <th class="p-4">Montant</th>
+            <th class="p-4">Type</th>
+            <th class="p-4">Date</th>
+            <th class="p-4">Compte</th>
+            <th class="p-4">Catégorie</th>
+            <th class="p-4">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
         {% for transaction in transactions %}
-            <li>{{ transaction.amount }}€ | {{ transaction.type }} | {{ transaction.description }} | {{ transaction.account.name }} | <a href="{{ path('app_transaction_edit', {'id': transaction.id}) }}">Modifier</a> | <a href="{{ path('app_transaction_delete', {'id': transaction.id}) }}" class="delete-link">Supprimer</a></li>
+            <tr>
+                <td class="p-4">
+                    {% if transaction.type == 'expense' %}
+                        <span class="text-red-500">-{{ transaction.amount }}€</span>
+                    {% elseif transaction.type == 'income' %}
+                        <span class="text-green-500">+{{ transaction.amount }}€</span>
+                    {% else %}
+                        {{ transaction.amount }}€
+                    {% endif %}
+                </td>
+                <td class="p-4">{{ transaction.type }}</td>
+                <td class="p-4">{{ transaction.date|date('d/m/Y') }}</td>
+                <td class="p-4">{{ transaction.account.name }}</td>
+                <td class="p-4">{{ transaction.category.name }}</td>
+                <td class="p-4">
+                    <a href="{{ path('app_transaction_edit', {'id': transaction.id}) }}" class="bg-yellow-500 hover:bg-yellow-600 text-white py-1 px-3 rounded">Modifier</a>
+                    <a href="{{ path('app_transaction_delete', {'id': transaction.id}) }}" class="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded">Supprimer</a>
+                </td>
+            </tr>
         {% endfor %}
-    </ul>
+        </tbody>
+    </table>
 
     <a href="{{ path('app_transaction_new') }}">Nouvelle transaction</a>
 

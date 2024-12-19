@@ -13,7 +13,38 @@
             {% block importmap %}{{ importmap('app') }}{% endblock %}
         {% endblock %}
     </head>
-    <body>
-        {% block body %}{% endblock %}
+    <body class="h-screen flex bg-gray-100">
+        <nav class="bg-blue-800 text-white w-64 h-screen flex flex-col">
+            <div class="p-6 text-center font-bold text-2xl">FinTracker</div>
+            <ul class="flex-1">
+                <li class="py-3 px-6 hover:bg-blue-700">
+                    <a href="{{ path('app_home') }}" class="flex items-center">
+                        <i data-feather="home" class="mr-2"></i>Accueil
+                    </a>
+                </li>
+                <li class="py-3 px-6 hover:bg-blue-700">
+                    <a href="{{ path('app_account') }}" class="flex items-center">
+                        <i data-feather="credit-card" class="mr-2"></i>Comptes
+                    </a>
+                </li>
+                <li class="py-3 px-6 hover:bg-blue-700">
+                    <a href="{{ path('app_transaction') }}" class="flex items-center">
+                        <i data-feather="list" class="mr-2"></i>Transactions
+                    </a>
+                </li>
+            </ul>
+            <div class="p-6">
+                <a href="{{ path('app_logout') }}" class="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded flex items-center justify-center">
+                    <i data-feather="log-out" class="mr-2"></i>Déconnexion
+                </a>
+            </div>
+        </nav>
+        <main class="flex-1 p-6">
+            {% block body %}
+            {% endblock %}
+        </main>
+        <script>
+            feather.replace()
+        </script>
     </body>
 </html>

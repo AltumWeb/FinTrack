@@ -1,20 +1,32 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello HomeController!{% endblock %}
-
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
-
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
-
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>/Users/mathieulp/Desktop/AltumWeb/AltumWeb-Docker/www/FinTrack/src/Controller/HomeController.php</code></li>
-        <li>Your template at <code>/Users/mathieulp/Desktop/AltumWeb/AltumWeb-Docker/www/FinTrack/templates/home/index.html.twig</code></li>
-    </ul>
-</div>
+    <section class="mb-6">
+        <h1 class="text-2xl font-bold">Statistiques Globales</h1>
+        <div class="grid grid-cols-3 gap-6 mt-4">
+            <div class="bg-white shadow-md p-6 rounded">
+                <h2 class="text-lg font-semibold">Revenus</h2>
+                <p class="text-3xl mt-2">$12,500</p>
+            </div>
+            <div class="bg-white shadow-md p-6 rounded">
+                <h2 class="text-lg font-semibold">Dépenses</h2>
+                <p class="text-3xl mt-2">$9,200</p>
+            </div>
+            <div class="bg-white shadow-md p-6 rounded">
+                <h2 class="text-lg font-semibold">Solde Disponible</h2>
+                <p class="text-3xl mt-2">$3,300</p>
+            </div>
+        </div>
+    </section>
+    <section class="mb-6">
+        <h1 class="text-2xl font-bold">Graphiques</h1>
+        <div id="charts" class="grid grid-cols-2 gap-6 mt-4">
+            <div class="bg-white shadow-md p-6 rounded">
+                <canvas id="incomeExpenseChart"></canvas>
+            </div>
+            <div class="bg-white shadow-md p-6 rounded">
+                <canvas id="categoryChart"></canvas>
+            </div>
+        </div>
+    </section>
 {% endblock %}
